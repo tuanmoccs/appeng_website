@@ -21,15 +21,38 @@
             <!-- ***** Menu Start ***** -->
             <ul class="nav">
               <li class="scroll-to-section">
-                <router-link to="/" class="logo">
+                <router-link to="/">
                   Home
                 </router-link>
               </li>
-              <li class="scroll-to-section"><a href="#services">Services</a></li>
-              <li class="scroll-to-section"><a href="#courses">Courses</a></li>
-              <li class="scroll-to-section"><a href="#team">Team</a></li>
-              <li class="scroll-to-section"><a href="#events">Events</a></li>
-              <li class="scroll-to-section"><a href="#contact">Register Now!</a></li>
+              <li class="scroll-to-section">
+                <router-link to="/">
+                  Listening
+                </router-link>
+              </li>
+              <li class="scroll-to-section">
+                <router-link to="/">
+                  Reading
+                </router-link>
+              </li>
+              <li class="scroll-to-section">
+                <router-link to="/">
+                  Speaking
+                </router-link>
+              </li>
+              <li class="scroll-to-section"><router-link to="/">
+                  Writing
+                </router-link></li>
+              <li class="scroll-to-section">
+                <router-link to="/register">
+                  Register
+                </router-link>
+              </li>
+              <li class="scroll-to-section">
+                <router-link to="/login">
+                  Login
+                </router-link>
+              </li>
             </ul>
             <a class='menu-trigger'>
               <span>Menu</span>

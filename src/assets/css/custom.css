@@ -1,0 +1,14 @@
+.forgot-password-link{
+  color: aliceblue;
+  margin-bottom: 10px;
+  font-size: 14px;
+}
+.forgot-password-link:hover{
+  color: blueviolet;
+}
+.auth-switch-link {
+  color: aliceblue;
+}
+.auth-switch-link:hover{
+  color: blueviolet;
+}
