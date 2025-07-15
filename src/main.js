@@ -1,6 +1,7 @@
-import $ from 'jquery'
-window.$ = window.jQuery = $
+import $ from 'jquery';
+window.$ = window.jQuery = $;
 import '@/assets/css/animate.css'
+import '@/assets/css/custom.css'
 import '@/assets/css/flex-slider.css'
 import '@/assets/css/fontawesome.css'
 import '@/assets/css/owl.css'

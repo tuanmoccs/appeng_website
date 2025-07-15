@@ -12,24 +12,23 @@ export default {
   name: 'LayoutDefault',
   components: { Header, Footer },
   mounted() {
-    this.loadScripts();
-  },
-  methods: {
-    async loadScripts() {
-      try {
-        // Load jQuery first
-        await import('jquery');
+    const loadScript = (src) => {
+      return new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src = src;
+        script.onload = resolve;
+        script.onerror = reject;
+        document.body.appendChild(script);
+      });
+    };
 
-        // Then load other scripts
-        await import('@/assets/js/counter');
-        await import('@/assets/js/custom');
-        await import('@/assets/js/owl-carousel');
-        await import('@/assets/jquery/jquery');
-        await import('@/assets/jquery/jquery.slim');
-      } catch (error) {
-        console.error('Error loading scripts:', error);
-      }
-    }
+    // 🧠 Load owl-carousel trước, rồi mới load custom.js
+    loadScript('https://code.jquery.com/jquery-3.6.0.min.js')
+      .then(() => loadScript('https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js'))
+      .then(() => loadScript('/js/custom.js'))
+      .catch((err) => {
+        console.error('Script loading failed:', err);
+      });
   }
 }
 </script>
