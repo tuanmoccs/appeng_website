@@ -10,6 +10,13 @@ import '@/assets/bootstrap/css/bootstrap.min.css'
 import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
-createApp(App)
-  .use(router)
-  .mount('#app')
+import store from './store'
+import axiosPlugin from './plugins/axios'
+import apiPlugin from './plugins/api'
+const app = createApp(App)
+app.use(store)
+app.use(router)
+app.use(axiosPlugin)
+app.use(apiPlugin)
+store.dispatch("initializeAuth")
+app.mount('#app')
