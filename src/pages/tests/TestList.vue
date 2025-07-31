@@ -1,11 +1,11 @@
 <template>
   <defaultlayout>
-    <div class="section courses" id="courses" style="padding-top: 30px;">
+    <div class="section courses" id="courses" style="margin-top: 20px;">
       <div class="container">
         <div class="row">
           <div class="col-lg-12 text-center">
             <div class="section-heading">
-              <h6>Practice Tests</h6>
+              <h4>Practice Tests</h4>
               <h2>English Practice Tests</h2>
               <p>Improve your English skills with our comprehensive practice tests</p>
             </div>
@@ -48,6 +48,25 @@
                   {{ test.description || 'Practice your English skills with this comprehensive test.' }}
                 </p>
 
+                <!-- User Latest Result -->
+                <div v-if="isLogged && test.user_latest_result" class="alert alert-info mb-3 py-2">
+                  <small class="d-block">
+                    <i class="fas fa-history me-1"></i>
+                    <strong>Lần làm gần nhất:</strong>
+                  </small>
+                  <div class="row text-center mt-2">
+                    <div class="col-12">
+                      <small class="text-muted">Điểm số</small>
+                      <div class="fw-bold">
+                        {{ test.user_latest_result.score }}%
+                      </div>
+                    </div>
+                  </div>
+                  <small class="text-muted d-block mt-1">
+                    {{ formatDate(test.user_latest_result.completed_at) }}
+                  </small>
+                </div>
+
                 <div class="test-stats mb-3">
                   <div class="row text-center">
                     <div class="col-4">
@@ -65,7 +84,7 @@
                 <div class="d-grid">
                   <button @click="startTest(test.id)" class="btn btn-primary">
                     <i class="fas fa-play me-2"></i>
-                    {{ isLogged ? 'Start Test' : 'Login Required' }}
+                    {{ getButtonText(test) }}
                   </button>
                 </div>
               </div>
@@ -190,6 +209,31 @@ export default {
       }
 
       this.$router.push(`/test/${testId}`);
+    },
+
+    getButtonText(test) {
+      if (!this.isLogged) {
+        return 'Login Required';
+      }
+
+      if (test.user_latest_result) {
+        return 'Làm lại Test';
+      }
+
+      return 'Start Test';
+    },
+
+    formatDate(dateString) {
+      if (!dateString) return '';
+
+      const date = new Date(dateString);
+      return date.toLocaleDateString('vi-VN', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
     }
   }
 }
@@ -197,35 +241,16 @@ export default {
 
 <style scoped>
 .test-card {
-  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  transition: transform 0.2s ease-in-out;
 }
 
 .test-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15) !important;
 }
 
-.test-stats {
-  border-top: 1px solid #eee;
-  border-bottom: 1px solid #eee;
-  padding: 15px 0;
-}
-
-.badge {
-  font-size: 0.75rem;
-}
-
-.spinner-border {
-  width: 3rem;
-  height: 3rem;
-}
-
-.page-link {
-  color: #007bff;
-}
-
-.page-item.active .page-link {
-  background-color: #007bff;
-  border-color: #007bff;
+.alert-info {
+  background-color: #e3f2fd;
+  border-color: #2196f3;
+  color: #1976d2;
 }
 </style>

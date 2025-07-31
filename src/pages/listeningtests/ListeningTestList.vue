@@ -1,11 +1,11 @@
 <template>
   <defaultlayout>
-    <div class="section courses" id="courses" style="padding-top: 30px;">
+    <div class="section courses" id="courses" style="margin-top: 20px;">
       <div class="container">
         <div class="row">
           <div class="col-lg-12 text-center">
             <div class="section-heading">
-              <h6>Listening Tests</h6>
+              <h4>Listening Tests</h4>
               <h2>English Listening Practice</h2>
               <p>Improve your listening skills with our comprehensive audio tests</p>
             </div>
@@ -51,6 +51,24 @@
                   {{ test.description || 'Practice your English listening skills with audio exercises.' }}
                 </p>
 
+                <div v-if="isLogged && test.user_latest_result && test.user_latest_result.score !== undefined"
+                  class="alert alert-info mb-3 py-2">
+                  <small class="d-block">
+                    <i class="fas fa-history me-1"></i>
+                    <strong>Lần làm gần nhất:</strong>
+                  </small>
+                  <div class="row text-center mt-2">
+                    <div class="col-12">
+                      <small class="text-muted">Điểm số</small>
+                      <div class="fw-bold">
+                        {{ test.user_latest_result.score }}%
+                      </div>
+                    </div>
+                  </div>
+                  <small class="text-muted d-block mt-1">
+                    {{ formatDate(test.user_latest_result.completed_at) }}
+                  </small>
+                </div>
                 <div class="test-stats mb-3">
                   <div class="row text-center">
                     <div class="col-4">
@@ -211,6 +229,18 @@ export default {
     capitalize(str) {
       if (!str) return '';
       return str.charAt(0).toUpperCase() + str.slice(1);
+    },
+    formatDate(dateString) {
+      if (!dateString) return '';
+
+      const date = new Date(dateString);
+      return date.toLocaleDateString('vi-VN', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
     }
   }
 }
@@ -248,5 +278,12 @@ export default {
 .page-item.active .page-link {
   background-color: #17a2b8;
   border-color: #17a2b8;
+}
+
+.section-heading h4 {
+  color: #7a6ad8;
+  font-size: 18px;
+  text-transform: uppercase;
+  font-weight: 600;
 }
 </style>

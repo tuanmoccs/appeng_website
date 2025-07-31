@@ -127,8 +127,6 @@ export default {
           email: this.loginForm.email,
           password: this.loginForm.password
         };
-
-        // Fix: Change $pai to $api
         const response = await this.$api.auth.login(credentials);
 
         if (response.success) {
