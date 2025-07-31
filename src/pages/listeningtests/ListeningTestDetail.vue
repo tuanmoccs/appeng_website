@@ -171,8 +171,7 @@
                       <div class="answers">
                         <div v-for="(option, index) in currentQuestion.options" :key="index" class="form-check mb-3">
                           <input class="form-check-input" type="radio" :name="'question_' + currentQuestion.id"
-                            :id="'option_' + currentQuestion.id + '_' + index"
-                            :value="option.key || String.fromCharCode(65 + index)"
+                            :id="'option_' + currentQuestion.id + '_' + index" :value="option.text || option"
                             v-model="userAnswers[currentQuestion.id]">
                           <label class="form-check-label w-100" :for="'option_' + currentQuestion.id + '_' + index">
                             <div class="d-flex align-items-center">
@@ -239,22 +238,27 @@
                   </div>
                   <div class="col-md-4">
                     <div class="result-stat">
-                      <h3 class="text-danger">{{ testResult.wrong_answers }}</h3>
-                      <p class="text-muted">Wrong Answers</p>
+                      <h3 class="text-danger">{{ testResult.total_questions }}</h3>
+                      <p class="text-muted">Total Question</p>
                     </div>
                   </div>
                 </div>
 
                 <div class="mb-4">
-                  <div class="alert" :class="testResult.passed ? 'alert-success' : 'alert-warning'">
-                    <i class="fas me-2" :class="testResult.passed ? 'fa-check-circle' : 'fa-exclamation-triangle'"></i>
-                    {{ testResult.passed ? 'Excellent! Your listening skills are improving.' : 'Keep practicing!'
+                  <div class="alert" :class="testResult.is_passed ? 'alert-success' : 'alert-warning'">
+                    <i class="fas me-2"
+                      :class="testResult.is_passed ? 'fa-check-circle' : 'fa-exclamation-triangle'"></i>
+                    {{ testResult.is_passed ? 'Excellent! Your listening skills are improving.' : 'Keep practicing!'
                     }}
                   </div>
                 </div>
 
-                <div class="d-grid gap-2 d-md-block">
-                  <button @click="retakeTest" class="btn btn-info text-white">
+                <div class="d-grid gap-2 d-md-block mb-4">
+                  <button @click="showReview = !showReview" class="btn btn-info me-2">
+                    <i class="fas fa-eye me-2"></i>
+                    {{ showReview ? 'Hide Review' : 'Review Answers' }}
+                  </button>
+                  <button @click="retakeTest" class="btn btn-info text-white me-2">
                     <i class="fas fa-redo me-2"></i>
                     Retake Test
                   </button>
@@ -262,6 +266,93 @@
                     <i class="fas fa-list me-2"></i>
                     Back to Tests
                   </button>
+                </div>
+                <!-- Detailed Review Section -->
+                <div v-if="showReview && testResult.detailed_results" class="mt-4">
+                  <div class="card">
+                    <div class="card-header bg-light">
+                      <h5 class="mb-0 text-start">
+                        <i class="fas fa-clipboard-list me-2"></i>
+                        Answer Review
+                      </h5>
+                    </div>
+                    <div class="card-body p-0">
+                      <div v-for="(result, index) in testResult.detailed_results" :key="result.question_id"
+                        class="border-bottom p-4"
+                        :class="{ 'bg-light-success': result.is_correct, 'bg-light-danger': !result.is_correct }">
+
+                        <!-- Question Header -->
+                        <div class="d-flex align-items-start justify-content-between mb-3">
+                          <h6 class="fw-bold mb-0">
+                            <span class="badge me-2" :class="result.is_correct ? 'bg-success' : 'bg-danger'">
+                              {{ index + 1 }}
+                            </span>
+                            {{ result.question }}
+                          </h6>
+                          <span class="badge" :class="result.is_correct ? 'bg-success' : 'bg-danger'">
+                            <i class="fas" :class="result.is_correct ? 'fa-check' : 'fa-times'"></i>
+                            {{ result.is_correct ? 'Correct' : 'Wrong' }}
+                          </span>
+                        </div>
+
+                        <!-- Answer Options -->
+                        <div class="row">
+                          <div class="col-md-6">
+                            <div class="mb-3">
+                              <label class="form-label fw-bold text-muted">Your Answer:</label>
+                              <div class="p-2 rounded"
+                                :class="result.is_correct ? 'bg-success bg-opacity-10 border border-success' : 'bg-danger bg-opacity-10 border border-danger'">
+                                <i class="fas me-2"
+                                  :class="result.is_correct ? 'fa-check text-success' : 'fa-times text-danger'"></i>
+                                {{ result.user_answer }}
+                              </div>
+                            </div>
+                          </div>
+
+                          <div class="col-md-6" v-if="!result.is_correct">
+                            <div class="mb-3">
+                              <label class="form-label fw-bold text-muted">Correct Answer:</label>
+                              <div class="p-2 rounded bg-success bg-opacity-10 border border-success">
+                                <i class="fas fa-check text-success me-2"></i>
+                                {{ result.correct_answer }}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        <!-- All Options Display -->
+                        <div class="mt-3">
+                          <label class="form-label fw-bold text-muted">All Options:</label>
+                          <div class="row">
+                            <div v-for="(option, optIndex) in result.options" :key="optIndex" class="col-md-6 mb-2">
+                              <div class="p-2 rounded border" :class="{
+                                'bg-success bg-opacity-10 border-success': (option.text || option) === result.correct_answer,
+                                'bg-danger bg-opacity-10 border-danger': (option.text || option) === result.user_answer && !result.is_correct,
+                                'border-light': (option.text || option) !== result.correct_answer && (option.text || option) !== result.user_answer
+                              }">
+                                <span class="badge bg-light text-dark me-2">
+                                  {{ option.key || String.fromCharCode(65 + optIndex) }}
+                                </span>
+                                {{ option.text || option }}
+                                <i v-if="(option.text || option) === result.correct_answer"
+                                  class="fas fa-check text-success ms-2"></i>
+                                <i v-else-if="(option.text || option) === result.user_answer && !result.is_correct"
+                                  class="fas fa-times text-danger ms-2"></i>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        <!-- Explanation if available -->
+                        <div v-if="result.explanation" class="mt-3">
+                          <div class="alert alert-info mb-0">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <strong>Explanation:</strong> {{ result.explanation }}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -294,7 +385,8 @@ export default {
       timer: null,
       isPlaying: false,
       audioDuration: 0,
-      audioCurrentTime: 0
+      audioCurrentTime: 0,
+      showReview: false
     }
   },
   computed: {
@@ -437,7 +529,7 @@ export default {
 
         const answers = Object.keys(this.userAnswers).map(questionId => ({
           question_id: parseInt(questionId),
-          answer: this.userAnswers[questionId]
+          selected_answer: this.userAnswers[questionId]
         }));
 
         const response = await this.$api.listeningtest.submit(this.test.id, {
@@ -446,7 +538,7 @@ export default {
         });
 
         if (response.success) {
-          this.testResult = response.data;
+          this.testResult = response.result;
           this.testCompleted = true;
           this.testStarted = false;
         }
