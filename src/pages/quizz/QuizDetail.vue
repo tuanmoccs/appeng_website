@@ -14,7 +14,7 @@
       </div>
 
       <!-- Test Content -->
-      <div v-if="!loading && !error && test">
+      <div v-if="!loading && !error && quiz">
         <!-- Test Header -->
         <div class="row mb-4">
           <div class="col-12">
@@ -22,13 +22,13 @@
               <div class="card-body">
                 <div class="d-flex justify-content-between align-items-start">
                   <div>
-                    <h1 class="h3 mb-2">{{ test.title }}</h1>
-                    <p class="text-muted mb-3">{{ test.description }}</p>
+                    <h1 class="h3 mb-2">{{ quiz.title }}</h1>
+                    <p class="text-muted mb-3">{{ quiz.description }}</p>
                     <div class="d-flex gap-3">
-                      <span class="badge bg-primary">{{ test.difficulty || 'Intermediate' }}</span>
+                      <span class="badge bg-primary">{{ quiz.difficulty || 'Intermediate' }}</span>
                       <span class="badge bg-success">
                         <i class="fas fa-clock me-1"></i>
-                        {{ test.duration || 30 }} minutes
+                        {{ quiz.time_limit || 30 }} minutes
                       </span>
                       <span class="badge bg-info">
                         <i class="fas fa-question-circle me-1"></i>
@@ -47,7 +47,7 @@
         </div>
 
         <!-- Progress Bar -->
-        <div class="row mb-4" v-if="testStarted">
+        <div class="row mb-4" v-if="quizStarted">
           <div class="col-12">
             <div class="card">
               <div class="card-body py-3">
@@ -71,18 +71,18 @@
         </div>
 
         <!-- Start Test Screen -->
-        <div v-if="!testStarted && !testCompleted" class="row">
+        <div v-if="!quizStarted && !quizCompleted" class="row">
           <div class="col-lg-8 mx-auto">
             <div class="card shadow">
               <div class="card-body text-center py-5">
                 <i class="fas fa-play-circle fa-4x text-primary mb-4"></i>
                 <h3 class="mb-3">Ready to start the test?</h3>
                 <p class="text-muted mb-4">
-                  You have {{ test.duration || 30 }} minutes to complete {{ questions.length }} questions.
+                  You have {{ quiz.time_limit || 30 }} minutes to complete {{ questions.length }} questions.
                   Make sure you have a stable internet connection.
                 </p>
                 <div class="d-grid gap-2 d-md-block">
-                  <button @click="startTest" class="btn btn-primary btn-lg px-5">
+                  <button @click="startQuiz" class="btn btn-primary btn-lg px-5">
                     <i class="fas fa-play me-2"></i>
                     Start Test
                   </button>
@@ -93,7 +93,7 @@
         </div>
 
         <!-- Question Display -->
-        <div v-if="testStarted && !testCompleted && currentQuestion" class="row">
+        <div v-if="quizStarted && !quizCompleted && currentQuestion" class="row">
           <div class="col-lg-8 mx-auto">
             <div class="card shadow">
               <div class="card-header bg-primary text-white">
@@ -115,16 +115,16 @@
 
                 <!-- Answer Options -->
                 <div class="answers">
-                  <div v-for="(option, index) in currentQuestion.options" :key="index" class="form-check mb-3">
+                  <div v-for="(option, index) in currentQuestionOptions" :key="index" class="form-check mb-3">
                     <input class="form-check-input" type="radio" :name="'question_' + currentQuestion.id"
-                      :id="'option_' + currentQuestion.id + '_' + index" :value="option.text || option"
+                      :id="'option_' + currentQuestion.id + '_' + index" :value="option"
                       v-model="userAnswers[currentQuestion.id]">
                     <label class="form-check-label w-100" :for="'option_' + currentQuestion.id + '_' + index">
                       <div class="d-flex align-items-center">
                         <span class="badge bg-light text-dark me-3">
-                          {{ option.key || String.fromCharCode(65 + index) }}
+                          {{ String.fromCharCode(65 + index) }}
                         </span>
-                        <span>{{ option.text || option }}</span>
+                        <span>{{ option }}</span>
                       </div>
                     </label>
                   </div>
@@ -145,7 +145,7 @@
                       <i class="fas fa-chevron-right ms-2"></i>
                     </button>
 
-                    <button v-if="currentQuestionIndex === questions.length - 1" @click="submitTest"
+                    <button v-if="currentQuestionIndex === questions.length - 1" @click="submitQuiz"
                       class="btn btn-success">
                       <i class="fas fa-check me-2"></i>
                       Submit Test
@@ -158,7 +158,7 @@
         </div>
 
         <!-- Test Results -->
-        <div v-if="testCompleted && testResult" class="row">
+        <div v-if="quizCompleted && quizResult" class="row">
           <div class="col-lg-10 mx-auto">
             <div class="card shadow">
               <div class="card-header bg-success text-white text-center">
@@ -170,36 +170,32 @@
               <div class="card-body text-center py-4">
                 <!-- Score Summary -->
                 <div class="row mb-4">
-                  <div class="col-md-6">
+                  <div class="col-md-4">
                     <div class="result-stat">
-                      <h3 class="text-primary">{{ testResult.score }}%</h3>
+                      <h3 class="text-primary">{{ Math.round(quizResult.percentage) }}%</h3>
                       <p class="text-muted">Your Score</p>
                     </div>
                   </div>
-                  <div class="col-md-6">
+                  <div class="col-md-4">
                     <div class="result-stat">
-                      <h3 class="text-success">{{ testResult.correct_answers }}/{{ testResult.total_questions }}</h3>
+                      <h3 class="text-success">{{ quizResult.score }}/{{ quizResult.total_questions }}</h3>
                       <p class="text-muted">Correct Answers</p>
                     </div>
                   </div>
-                </div>
-
-                <!-- Pass/Fail Status -->
-                <div class="mb-4">
-                  <div class="alert" :class="testResult.is_passed ? 'alert-success' : 'alert-warning'">
-                    <i class="fas me-2"
-                      :class="testResult.is_passed ? 'fa-check-circle' : 'fa-exclamation-triangle'"></i>
-                    {{ testResult.is_passed ? 'Congratulations! You passed the test.' : 'Keep practicing!' }}
+                  <div class="col-md-4">
+                    <div class="result-stat">
+                      <h3 class="text-info">{{ quizResult.correct_answers?.length || 0 }}</h3>
+                      <p class="text-muted">Questions Right</p>
+                    </div>
                   </div>
                 </div>
-
                 <!-- Action Buttons -->
                 <div class="d-grid gap-2 d-md-block mb-4">
                   <button @click="showReview = !showReview" class="btn btn-info me-2">
                     <i class="fas fa-eye me-2"></i>
                     {{ showReview ? 'Hide Review' : 'Review Answers' }}
                   </button>
-                  <button @click="retakeTest" class="btn btn-primary me-2">
+                  <button @click="retakeQuiz" class="btn btn-primary me-2">
                     <i class="fas fa-redo me-2"></i>
                     Retake Test
                   </button>
@@ -210,7 +206,7 @@
                 </div>
 
                 <!-- Detailed Review Section -->
-                <div v-if="showReview && testResult.detailed_results" class="mt-4">
+                <div v-if="showReview && quizResult.incorrect_answers" class="mt-4">
                   <div class="card">
                     <div class="card-header bg-light">
                       <h5 class="mb-0 text-start">
@@ -219,21 +215,21 @@
                       </h5>
                     </div>
                     <div class="card-body p-0">
-                      <div v-for="(result, index) in testResult.detailed_results" :key="result.question_id"
-                        class="border-bottom p-4"
-                        :class="{ 'bg-light-success': result.is_correct, 'bg-light-danger': !result.is_correct }">
+                      <!-- Show all questions with answers -->
+                      <div v-for="(question, index) in questions" :key="question.id" class="border-bottom p-4">
 
                         <!-- Question Header -->
                         <div class="d-flex align-items-start justify-content-between mb-3">
                           <h6 class="fw-bold mb-0">
-                            <span class="badge me-2" :class="result.is_correct ? 'bg-success' : 'bg-danger'">
+                            <span class="badge me-2"
+                              :class="isQuestionCorrect(question.id) ? 'bg-success' : 'bg-danger'">
                               {{ index + 1 }}
                             </span>
-                            {{ result.question }}
+                            {{ question.question }}
                           </h6>
-                          <span class="badge" :class="result.is_correct ? 'bg-success' : 'bg-danger'">
-                            <i class="fas" :class="result.is_correct ? 'fa-check' : 'fa-times'"></i>
-                            {{ result.is_correct ? 'Correct' : 'Wrong' }}
+                          <span class="badge" :class="isQuestionCorrect(question.id) ? 'bg-success' : 'bg-danger'">
+                            <i class="fas" :class="isQuestionCorrect(question.id) ? 'fa-check' : 'fa-times'"></i>
+                            {{ isQuestionCorrect(question.id) ? 'Correct' : 'Wrong' }}
                           </span>
                         </div>
 
@@ -243,20 +239,20 @@
                             <div class="mb-3">
                               <label class="form-label fw-bold text-muted">Your Answer:</label>
                               <div class="p-2 rounded"
-                                :class="result.is_correct ? 'bg-success bg-opacity-10 border border-success' : 'bg-danger bg-opacity-10 border border-danger'">
+                                :class="isQuestionCorrect(question.id) ? 'bg-success bg-opacity-10 border border-success' : 'bg-danger bg-opacity-10 border border-danger'">
                                 <i class="fas me-2"
-                                  :class="result.is_correct ? 'fa-check text-success' : 'fa-times text-danger'"></i>
-                                {{ result.user_answer }}
+                                  :class="isQuestionCorrect(question.id) ? 'fa-check text-success' : 'fa-times text-danger'"></i>
+                                {{ userAnswers[question.id] || 'No answer' }}
                               </div>
                             </div>
                           </div>
 
-                          <div class="col-md-6" v-if="!result.is_correct">
+                          <div class="col-md-6" v-if="!isQuestionCorrect(question.id)">
                             <div class="mb-3">
                               <label class="form-label fw-bold text-muted">Correct Answer:</label>
                               <div class="p-2 rounded bg-success bg-opacity-10 border border-success">
                                 <i class="fas fa-check text-success me-2"></i>
-                                {{ result.correct_answer }}
+                                {{ getCorrectAnswerForQuestion(question.id) }}
                               </div>
                             </div>
                           </div>
@@ -266,30 +262,23 @@
                         <div class="mt-3">
                           <label class="form-label fw-bold text-muted">All Options:</label>
                           <div class="row">
-                            <div v-for="(option, optIndex) in result.options" :key="optIndex" class="col-md-6 mb-2">
+                            <div v-for="(option, optIndex) in getOptionsForQuestion(question)" :key="optIndex"
+                              class="col-md-6 mb-2">
                               <div class="p-2 rounded border" :class="{
-                                'bg-success bg-opacity-10 border-success': (option.text || option) === result.correct_answer,
-                                'bg-danger bg-opacity-10 border-danger': (option.text || option) === result.user_answer && !result.is_correct,
-                                'border-light': (option.text || option) !== result.correct_answer && (option.text || option) !== result.user_answer
+                                'bg-success bg-opacity-10 border-success': option === getCorrectAnswerForQuestion(question.id),
+                                'bg-danger bg-opacity-10 border-danger': option === userAnswers[question.id] && !isQuestionCorrect(question.id),
+                                'border-light': option !== getCorrectAnswerForQuestion(question.id) && option !== userAnswers[question.id]
                               }">
                                 <span class="badge bg-light text-dark me-2">
-                                  {{ option.key || String.fromCharCode(65 + optIndex) }}
+                                  {{ String.fromCharCode(65 + optIndex) }}
                                 </span>
-                                {{ option.text || option }}
-                                <i v-if="(option.text || option) === result.correct_answer"
+                                {{ option }}
+                                <i v-if="option === getCorrectAnswerForQuestion(question.id)"
                                   class="fas fa-check text-success ms-2"></i>
-                                <i v-else-if="(option.text || option) === result.user_answer && !result.is_correct"
+                                <i v-else-if="option === userAnswers[question.id] && !isQuestionCorrect(question.id)"
                                   class="fas fa-times text-danger ms-2"></i>
                               </div>
                             </div>
-                          </div>
-                        </div>
-
-                        <!-- Explanation if available -->
-                        <div v-if="result.explanation" class="mt-3">
-                          <div class="alert alert-info mb-0">
-                            <i class="fas fa-info-circle me-2"></i>
-                            <strong>Explanation:</strong> {{ result.explanation }}
                           </div>
                         </div>
                       </div>
@@ -302,26 +291,26 @@
         </div>
       </div>
     </div>
-    <ChatbotTest v-if="testStarted && !testCompleted && test && currentQuestion" :test-data="test"
+    <ChatbotQuiz v-if="quizStarted && !quizCompleted && quiz && currentQuestion" :test-data="quiz"
       :current-question="currentQuestion" :current-question-number="currentQuestionIndex + 1" :show-toggle="true" />
   </defaultlayout>
 </template>
 
 <script>
 import defaultlayout from '@/layout/default.vue';
-import ChatbotTest from '@/components/chatbot/ChatbotTest.vue';
+import ChatbotQuiz from '@/components/chatbot/ChatbotQuiz.vue';
 export default {
   name: 'TestDetail',
-  components: { defaultlayout, ChatbotTest },
+  components: { defaultlayout, ChatbotQuiz },
   data() {
     return {
-      test: null,
+      quiz: null,
       questions: [],
       currentQuestionIndex: 0,
       userAnswers: {},
-      testStarted: false,
-      testCompleted: false,
-      testResult: null,
+      quizStarted: false,
+      quizCompleted: false,
+      quizResult: null,
       loading: true,
       error: null,
       timeRemaining: 0,
@@ -333,13 +322,17 @@ export default {
     currentQuestion() {
       return this.questions[this.currentQuestionIndex] || null;
     },
+    currentQuestionOptions() {
+      if (!this.currentQuestion) return [];
+      return this.getOptionsForQuestion(this.currentQuestion);
+    },
     progressPercentage() {
       if (this.questions.length === 0) return 0;
       return ((this.currentQuestionIndex + 1) / this.questions.length) * 100;
     }
   },
   async mounted() {
-    await this.loadTest();
+    await this.loadQuiz();
   },
   beforeUnmount() {
     if (this.timer) {
@@ -347,18 +340,22 @@ export default {
     }
   },
   methods: {
-    async loadTest() {
+    async loadQuiz() {
       try {
         this.loading = true;
         this.error = null;
 
-        const testId = this.$route.params.id;
-        const response = await this.$api.test.getById(testId);
+        const quizId = this.$route.params.id;
+        const quiz = await this.$api.quiz.getById(quizId);
 
-        if (response.success) {
-          this.test = response.test.test || response.test;
-          this.questions = response.test.questions || [];
-          this.timeRemaining = (this.test.time_limit || 30) * 60; // Convert to seconds
+        console.log('Quiz API response:', quiz);
+
+        if (quiz && quiz.id) { // check đơn giản
+          this.quiz = quiz;
+          this.questions = quiz.questions || [];
+          this.timeRemaining = (quiz.time_limit || 30) * 60; // giây
+        } else {
+          this.error = 'Quiz data is invalid.';
         }
       } catch (error) {
         console.error('Error loading test:', error);
@@ -368,8 +365,35 @@ export default {
       }
     },
 
-    startTest() {
-      this.testStarted = true;
+
+    getOptionsForQuestion(question) {
+      if (!question || !question.options) return [];
+
+      let options = question.options;
+
+      // If options is a string, try to parse it as JSON
+      if (typeof options === 'string') {
+        try {
+          options = JSON.parse(options);
+        } catch (e) {
+          // If parsing fails, split by comma or return as single option
+          options = options.includes(',') ? options.split(',') : [options];
+        }
+      }
+
+      // Ensure it's an array
+      if (!Array.isArray(options)) {
+        return [];
+      }
+
+      return options.map(option => {
+        // Handle both string options and object options with text property
+        return typeof option === 'object' && option.text ? option.text : option;
+      });
+    },
+
+    startQuiz() {
+      this.quizStarted = true;
       this.startTimer();
     },
 
@@ -378,7 +402,7 @@ export default {
         if (this.timeRemaining > 0) {
           this.timeRemaining--;
         } else {
-          this.submitTest();
+          this.submitQuiz();
         }
       }, 1000);
     },
@@ -401,26 +425,30 @@ export default {
       }
     },
 
-    async submitTest() {
+    async submitQuiz() {
       try {
         if (this.timer) {
           clearInterval(this.timer);
         }
 
-        const answers = Object.keys(this.userAnswers).map(questionId => ({
-          question_id: parseInt(questionId),
-          selected_answer: this.userAnswers[questionId]
-        }));
-
-        const response = await this.$api.test.submit(this.test.id, {
-          answers,
-          //time_taken: (this.test.duration * 60) - this.timeRemaining
+        const formattedAnswers = {};
+        Object.keys(this.userAnswers).forEach(questionId => {
+          formattedAnswers[parseInt(questionId)] = this.userAnswers[questionId];
         });
 
-        if (response.success) {
-          this.testResult = response.result;
-          this.testCompleted = true;
-          this.testStarted = false;
+        const result = await this.$api.quiz.submit(this.quiz.id, {
+          answers: formattedAnswers,
+          time_taken: (this.quiz.time_limit * 60) - this.timeRemaining
+        });
+
+        console.log('Quiz submit result:', result);
+
+        if (result && result.quiz_id) { // check đơn giản
+          this.quizResult = result;
+          this.quizCompleted = true;
+          this.quizStarted = false;
+        } else {
+          this.error = 'Invalid quiz result from server.';
         }
       } catch (error) {
         console.error('Error submitting test:', error);
@@ -428,18 +456,34 @@ export default {
       }
     },
 
-    retakeTest() {
-      this.testStarted = false;
-      this.testCompleted = false;
-      this.testResult = null;
+
+    retakeQuiz() {
+      this.quizStarted = false;
+      this.quizCompleted = false;
+      this.quizResult = null;
       this.currentQuestionIndex = 0;
       this.userAnswers = {};
-      this.timeRemaining = (this.test.duration || 30) * 60;
+      this.timeRemaining = (this.quiz.time_limit || 30) * 60;
       this.showReview = false;
     },
 
     goBack() {
-      this.$router.push('/tests');
+      this.$router.push('/quizzes');
+    },
+
+    isQuestionCorrect(questionId) {
+      if (!this.quizResult) return false;
+      return this.quizResult.correct_answers?.includes(questionId) || false;
+    },
+
+    getCorrectAnswerForQuestion(questionId) {
+      if (!this.quizResult || !this.quizResult.incorrect_answers) return '';
+
+      const incorrectAnswer = this.quizResult.incorrect_answers.find(
+        item => item.question_id === questionId
+      );
+
+      return incorrectAnswer ? incorrectAnswer.correct_answer : '';
     }
   }
 }
