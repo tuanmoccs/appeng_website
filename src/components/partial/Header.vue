@@ -19,6 +19,15 @@
               <li class="scroll-to-section">
                 <router-link to="/tests">Reading</router-link>
               </li>
+              <!-- <li class="scroll-to-section reading-dropdown" @mouseenter="readingDropdownVisible = true"
+                @mouseleave="readingDropdownVisible = false">
+                <span class="reading-link">Reading ▼</span>
+                <ul class="reading-submenu" v-show="readingDropdownVisible">
+                  <li><router-link to="/word">Word</router-link></li>
+                  <li><router-link to="/quizz">Quizz</router-link></li>
+                  <li><router-link to="/tests">Test</router-link></li>
+                </ul>
+              </li> -->
               <li class="scroll-to-section">
                 <router-link to="/">Speaking</router-link>
               </li>
@@ -73,7 +82,8 @@ export default {
   name: "Header",
   data() {
     return {
-      dropdownVisible: false
+      dropdownVisible: false,
+      readingDropdownVisible: false
     }
   },
   computed: {
@@ -350,5 +360,49 @@ export default {
 .nav {
   position: relative;
   z-index: 1000;
+}
+
+.reading-dropdown {
+  position: relative;
+  font-size: 14px;
+  color: #fff;
+  line-height: 40px;
+  margin-top: -7px;
+}
+
+.reading-link {
+  cursor: pointer;
+  padding: 8px 12px;
+  display: inline-block;
+}
+
+.reading-submenu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: #7a6ad8;
+  border: 1px solid #ddd;
+  min-width: 120px;
+  padding: 4px 0;
+  margin: 0;
+  list-style: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.reading-submenu li {
+  padding: 0;
+}
+
+.reading-submenu li a {
+  display: block;
+  padding: 6px 12px;
+  color: #333;
+  font-size: 14px;
+  text-decoration: none;
+  border-radius: 0;
+}
+
+.reading-submenu li a:hover {
+  background: #f5f5f5;
 }
 </style>
