@@ -6,6 +6,8 @@ import TestList from "@/pages/tests/TestList.vue"
 import TestDetail from "@/pages/tests/TestDetail.vue"
 import ListeningTestList from "@/pages/listeningtests/ListeningTestList.vue"
 import ListeningTestDetail from "@/pages/listeningtests/ListeningTestDetail.vue"
+import QuizzList from "@/pages/quizz/QuizzList.vue"
+import QuizDetail from "@/pages/quizz/QuizDetail.vue"
 
 const routes = [
   {
@@ -42,6 +44,16 @@ const routes = [
     path: "/listening-test/:id",
     name: "listening.detail",
     component: ListeningTestDetail,
+  },
+  {
+    path: "/quizzes",
+    name: "quizzes.list",
+    component: QuizzList,
+  },
+  {
+    path: "/quizz/:id",
+    name: "quizzes.detail",
+    component: QuizDetail,
   },
 ]
 
