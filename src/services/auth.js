@@ -3,7 +3,12 @@ export default ({ $axios }) => ({
   async login(params) {
     return await $axios.$post('auth/login', params)
   },
-  
+  async loginWithGoogle () {
+    return await $axios.$get('auth/google')
+  },
+  async loginWithFacebook () {
+    return await $axios.$get('auth/facebook')
+  },
   async register(params) {
     return await $axios.$post('auth/register', params)
   },
