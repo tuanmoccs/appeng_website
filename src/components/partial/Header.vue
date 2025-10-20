@@ -29,7 +29,7 @@
                 </ul>
               </li> -->
               <li class="scroll-to-section">
-                <router-link to="/">Speaking</router-link>
+                <router-link to="/speaking-with-ai">Speaking</router-link>
               </li>
               <li class="scroll-to-section">
                 <router-link to="/">Writing</router-link>

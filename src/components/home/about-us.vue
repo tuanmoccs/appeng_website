@@ -3,83 +3,73 @@
     <div class="container">
       <div class="row">
         <div class="col-lg-6 offset-lg-1">
-          <div class="accordion" id="accordionExample">
-            <div class="accordion-item">
-              <h2 class="accordion-header" id="headingOne">
-                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne"
-                  aria-expanded="true" aria-controls="collapseOne">
-                  Where shall we begin?
+          <div class="accordion">
+            <div v-for="item in accordionData" :key="item.id" class="accordion-item">
+              <h2 class="accordion-header">
+                <button class="accordion-button" :class="{ collapsed: activeItem !== item.id }" type="button"
+                  @click="toggleAccordion(item.id)">
+                  {{ item.question }}
                 </button>
               </h2>
-              <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne"
-                data-bs-parent="#accordionExample">
-                <div class="accordion-body">
-                  Dolor <strong>almesit amet</strong>, consectetur adipiscing elit, sed doesn't eiusmod tempor
-                  incididunt ut labore consectetur <code>adipiscing</code> elit, sed do eiusmod tempor incididunt ut
-                  labore et dolore magna aliqua. Quis ipsum suspendisse ultrices gravida.
-                </div>
-              </div>
-            </div>
-            <div class="accordion-item">
-              <h2 class="accordion-header" id="headingTwo">
-                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                  data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-                  How do we work together?
-                </button>
-              </h2>
-              <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo"
-                data-bs-parent="#accordionExample">
-                <div class="accordion-body">
-                  Dolor <strong>almesit amet</strong>, consectetur adipiscing elit, sed doesn't eiusmod tempor
-                  incididunt ut labore consectetur <code>adipiscing</code> elit, sed do eiusmod tempor incididunt ut
-                  labore et dolore magna aliqua. Quis ipsum suspendisse ultrices gravida.
-                </div>
-              </div>
-            </div>
-            <div class="accordion-item">
-              <h2 class="accordion-header" id="headingThree">
-                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                  data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
-                  Why SCHOLAR is the best?
-                </button>
-              </h2>
-              <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree"
-                data-bs-parent="#accordionExample">
-                <div class="accordion-body">
-                  There are more than one hundred responsive HTML templates to choose from <strong>Template</strong>Mo
-                  website. You can browse by different tags or categories.
-                </div>
-              </div>
-            </div>
-            <div class="accordion-item">
-              <h2 class="accordion-header" id="headingFour">
-                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                  data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
-                  Do we get the best support?
-                </button>
-              </h2>
-              <div id="collapseFour" class="accordion-collapse collapse" aria-labelledby="headingFour"
-                data-bs-parent="#accordionExample">
-                <div class="accordion-body">
-                  You can also search on Google with specific keywords such as
-                  <code>templatemo business templates, templatemo gallery templates, admin dashboard templatemo, 3-column templatemo, etc.</code>
+              <div :class="['accordion-collapse', 'collapse', { show: activeItem === item.id }]">
+                <div class="accordion-body" v-html="item.answer">
                 </div>
               </div>
             </div>
           </div>
         </div>
-        <div class="col-lg-5 align-self-center">
+        <div class="col-lg-5 align-self-center" style="padding: 30px 0;">
           <div class="section-heading">
             <h6>About Us</h6>
-            <h2>What make us the best academy online?</h2>
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
-              dolore magna aliqua. Quis ipsum suspendisse ultrices gravid risus commodo.</p>
+            <h2>Helping You Speak English with Confidence</h2>
+            <p>We are an online English academy offering interactive lessons, real-life practice, and AI-powered
+              support. Whether you’re learning for work, study, or travel, our platform helps you improve quickly and
+              stay motivated.</p>
             <div class="main-button">
               <a href="#">Discover More</a>
             </div>
           </div>
         </div>
+        <!-- Phần content bên phải giống như code gốc -->
       </div>
     </div>
   </div>
 </template>
+
+<script>
+export default {
+  name: 'EnglishLearningAccordion',
+  data() {
+    return {
+      activeItem: 'collapseOne',
+      accordionData: [
+        {
+          id: 'collapseOne',
+          question: 'How should I start learning English here?',
+          answer: 'Begin with our placement test to check your current level. Then, follow our step-by-step learning path with listening, reading, speaking, and writing lessons designed just for you.'
+        },
+        {
+          id: 'collapseTwo',
+          question: 'How does AI help me improve faster?',
+          answer: 'Our AI provides instant feedback on pronunciation, grammar, and writing. It suggests corrections, gives personalized exercises, and helps you speak more naturally with real-time conversation practice.'
+        },
+        {
+          id: 'collapseThree',
+          question: 'Why choose our English learning platform?',
+          answer: 'We combine interactive lessons, daily quizzes, and AI-powered support to help you learn efficiently. Our platform is flexible, beginner-friendly, and works on any device, anytime.'
+        },
+        {
+          id: 'collapseFour',
+          question: 'Do I get support from teachers?',
+          answer: 'Yes! You can join live sessions with experienced English teachers, ask questions anytime, and get guidance to make steady progress toward your language goals.'
+        }
+      ]
+    }
+  },
+  methods: {
+    toggleAccordion(itemId) {
+      this.activeItem = this.activeItem === itemId ? '' : itemId;
+    }
+  }
+}
+</script>

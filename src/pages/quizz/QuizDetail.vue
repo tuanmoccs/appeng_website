@@ -76,7 +76,7 @@
             <div class="card shadow">
               <div class="card-body text-center py-5">
                 <i class="fas fa-play-circle fa-4x text-primary mb-4"></i>
-                <h3 class="mb-3">Ready to start the test?</h3>
+                <h3 class="mb-3">Ready to start the quiz?</h3>
                 <p class="text-muted mb-4">
                   You have {{ quiz.time_limit || 30 }} minutes to complete {{ questions.length }} questions.
                   Make sure you have a stable internet connection.

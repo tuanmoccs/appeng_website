@@ -8,6 +8,9 @@ import ListeningTestList from "@/pages/listeningtests/ListeningTestList.vue"
 import ListeningTestDetail from "@/pages/listeningtests/ListeningTestDetail.vue"
 import QuizzList from "@/pages/quizz/QuizzList.vue"
 import QuizDetail from "@/pages/quizz/QuizDetail.vue"
+import Translate from "@/pages/word/translate.vue"
+import SpeakingwithAI from "@/pages/speaking/speakingwithAI.vue"
+import OauthCallback from "@/pages/auth/OauthCallback.vue"
 
 const routes = [
   {
@@ -55,6 +58,21 @@ const routes = [
     name: "quizzes.detail",
     component: QuizDetail,
   },
+  {
+    path: "/translate",
+    name: "translate",
+    component: Translate,
+  },
+  {
+    path: "/speaking-with-ai",
+    name: "speaking-with-ai",
+    component: SpeakingwithAI,
+  },
+  {
+    path: '/oauth/callback',
+    name: 'OAuthCallback',
+    component: OauthCallback,
+  }
 ]
 
 const router = createRouter({
